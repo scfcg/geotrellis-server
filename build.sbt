@@ -92,6 +92,8 @@ lazy val http4s =
         geotrellisSpark,
         decline,
         cats,
+        catsEffect,
+        mamlJvm,
         commonsIO,
         concHashMap,
         kindProjector,

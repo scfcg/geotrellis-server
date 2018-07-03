@@ -11,7 +11,6 @@ import org.http4s.circe._
 import io.circe._
 import io.circe.syntax._
 import cats._
-import cats.data.EitherT
 import cats.implicits._
 import cats.effect._
 import com.typesafe.scalalogging.LazyLogging
@@ -24,26 +23,18 @@ import java.util.UUID
 import scala.util.Try
 import scala.collection.mutable
 
+
 class MamlPersistenceService[ExpressionStore: MamlStore](val store: ExpressionStore) extends Http4sDsl[IO] with LazyLogging {
 
   implicit val expressionDecoder = jsonOf[IO, Expression]
 
-  object IdVar {
-    def unapply(str: String): Option[UUID] = {
-      if (!str.isEmpty)
-        Try(UUID.fromString(str)).toOption
-      else
-        None
-    }
-  }
-
   def routes: HttpService[IO] = HttpService[IO] {
     case req @ POST -> Root / IdVar(key) =>
       (for {
-        expr <- EitherT(req.as[Expression].attempt)
-        _    <- EitherT.pure[IO, Throwable](logger.info(s"Attempting to store expression ($req.bodyAsText) at key ($key)"))
-        res  <- EitherT(store.putMaml(key, expr).attempt)
-      } yield res).value flatMap {
+        expr <- req.as[Expression]
+        _    <- IO { logger.info(s"Attempting to store expression ($req.bodyAsText) at key ($key)") }
+        res  <- store.putMaml(key, expr)
+      } yield res).attempt flatMap {
         case Right(created) =>
           Created()
         case Left(err) =>

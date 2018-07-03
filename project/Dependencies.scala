@@ -38,6 +38,6 @@ object Dependencies {
   val kamonHttp4s       = "io.kamon"                      %% "kamon-http4s"         % "1.0.7"
   //val kamonZipkin       = "io.kamon"                      %% "kamon-zipkin"         % "1.0.1"
   val pureConfig        = "com.github.pureconfig"         %% "pureconfig"           % "0.9.1"
-  val mamlJvm           = "com.azavea"                    %% "maml-jvm"             % "0.0.4-0fbf423"
+  val mamlJvm           = "com.azavea"                    %% "maml-jvm"             % "0.0.5"
   val scalatest         = "org.scalatest"                 %%  "scalatest"           % "3.0.4" % "test"
 }
