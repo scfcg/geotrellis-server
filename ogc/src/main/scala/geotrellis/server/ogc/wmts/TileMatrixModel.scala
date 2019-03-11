@@ -11,10 +11,10 @@ import java.io.File
 import java.net._
 
 case class TileMatrixModel(
-  matrices: List[TileMatrixSet]
+  matrices: List[TileMatrixSetConf]
 ) {
 
-  val matrixSetLookup: Map[String, TileMatrixSet] =
+  val matrixSetLookup: Map[String, TileMatrixSetConf] =
     matrices.map({tileMatrixSet => tileMatrixSet.identifier -> tileMatrixSet}).toMap
 
   def getLayoutDefinition(tileMatrixSetId: String, tileMatrixId: String): Option[LayoutDefinition] =

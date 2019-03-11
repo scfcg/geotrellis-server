@@ -40,14 +40,15 @@ object Server extends LazyLogging with IOApp {
     for {
       conf       <- Stream.eval(LoadConf().as[Conf])
       _          <- Stream.eval(IO.pure(logger.info(s"Advertising service URL at ${conf.serviceUrlWms}")))
+      _          <- Stream.eval(IO.pure(logger.info(s"Advertising service URL at ${conf.serviceUrlWmts}")))
       _          <- Stream.eval(IO.pure(logger.info(s"Advertising service URL at ${conf.serviceUrlWcs}")))
 
       simpleLayers = conf.layers.collect { case ssc@SimpleSourceConf(_, _, _, _) => ssc.model }
       mapAlgebraLayers = conf.layers.collect { case mal@MapAlgebraSourceConf(_, _, _, _) => mal.model(simpleLayers) }
       rasterSourcesModel = RasterSourcesModel(simpleLayers ++ mapAlgebraLayers)
 
-      // TODO: Make this come from config instead of being hardcoded
-      tileMatrixSetModel = TileMatrixModel(List(TileMatrixSet.GoogleMapsCompatible))
+      tileMatrixSets = conf.tileMatrixSets.collect { case tm@TileMatrixSetConf(_, _, _, _, _, _, _) => tm.model }
+      tileMatrixSetModel = TileMatrixModel(tileMatrixSets)
 
       wmsService = new WmsService(rasterSourcesModel, conf.serviceUrlWms, conf.wms.serviceMetadata)
       wcsService = new WcsService(rasterSourcesModel, conf.serviceUrlWcs)

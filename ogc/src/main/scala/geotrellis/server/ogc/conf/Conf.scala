@@ -3,6 +3,7 @@ package geotrellis.server.ogc.conf
 import java.net.{InetAddress, URL}
 
 import geotrellis.server.ogc.wms.wmsScope
+import geotrellis.server.ogc.wmts.TileMatrixSetConf
 import pureconfig.ConfigReader
 import scalaxb.DataRecord
 
@@ -12,7 +13,8 @@ case class Conf(
   http: Conf.Http,
   service: Conf.Service,
   wms: WMS,
-  layers: List[OgcSourceConf]
+  layers: List[OgcSourceConf],
+  tileMatrixSets: List[TileMatrixSetConf]
 ) {
   def serviceUrlWms: URL = {
     // TODO: move decision to attach WMS to the point where we decide which service (wms, wmts, wcs) to bind
