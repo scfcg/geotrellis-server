@@ -33,7 +33,7 @@ import com.github.blemale.scaffeine.{Cache, Scaffeine}
 import java.net.URL
 import scala.concurrent.duration._
 
-class WmsView(wmsModel: WmsModel, serviceUrl: URL) extends LazyLogging {
+class WmsView(wmsModel: WmsModel, serviceUrl: URL, interpreter: Interpreter) extends LazyLogging {
 
   private val histoCache: Cache[OgcLayer, Interpreted[List[Histogram[Double]]]] =
     Scaffeine()
@@ -60,14 +60,14 @@ class WmsView(wmsModel: WmsModel, serviceUrl: URL) extends LazyLogging {
             case sl@SimpleOgcLayer(_, _, _, _, _) =>
               LayerExtent.identity(sl)
             case sl@MapAlgebraOgcLayer(_, _, _, parameters, expr, _) =>
-              LayerExtent(IO.pure(expr), IO.pure(parameters), Interpreter.DEFAULT)
+              LayerExtent(IO.pure(expr), IO.pure(parameters), interpreter)
           }
 
           val evalHisto = layer match {
             case sl@SimpleOgcLayer(_, _, _, _, _) =>
               LayerHistogram.identity(sl, 512)
             case sl@MapAlgebraOgcLayer(_, _, _, parameters, expr, _) =>
-              LayerHistogram(IO.pure(expr), IO.pure(parameters), Interpreter.DEFAULT, 512)
+              LayerHistogram(IO.pure(expr), IO.pure(parameters), interpreter, 512)
           }
 
           val histIO = for {

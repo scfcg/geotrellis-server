@@ -4,6 +4,7 @@ import geotrellis.server.ogc.wcs.params._
 import geotrellis.server.ogc.wcs.ops._
 import geotrellis.server.ogc._
 
+import com.azavea.maml.eval._
 import geotrellis.contrib.vlm.RasterSource
 import geotrellis.contrib.vlm.geotiff._
 import geotrellis.contrib.vlm.avro._
@@ -26,7 +27,7 @@ import cats.data.Validated
 import java.io.File
 import java.net._
 
-class WcsView(wcsModel: WcsModel, serviceUrl: URL) extends LazyLogging {
+class WcsView(wcsModel: WcsModel, serviceUrl: URL, interpreter: Interpreter) extends LazyLogging {
 
   private def handleError[Result](result: Either[Throwable, Result])(implicit ee: EntityEncoder[IO, Result]) = result match {
     case Right(res) =>
@@ -37,7 +38,7 @@ class WcsView(wcsModel: WcsModel, serviceUrl: URL) extends LazyLogging {
       InternalServerError(err.toString)
   }
 
-  private val getCoverage = new GetCoverage(wcsModel)
+  private val getCoverage = new GetCoverage(wcsModel, interpreter)
 
   def responseFor(req: Request[IO])(implicit cs: ContextShift[IO]): IO[Response[IO]] = {
     WcsParams(req.multiParams) match {

@@ -1,5 +1,6 @@
 package geotrellis.server.ogc
 
+import com.azavea.maml.eval._
 import geotrellis.server.ogc.wcs._
 import geotrellis.server.ogc.wms._
 import geotrellis.server.ogc.wmts._
@@ -16,12 +17,13 @@ class OgcService(
   wmsModel: WmsModel,
   wcsModel: WcsModel,
   wmtsModel: WmtsModel,
-  serviceUrl: URL
+  serviceUrl: URL,
+  interpreter: Interpreter
 )(implicit contextShift: ContextShift[IO]) extends Http4sDsl[IO] with LazyLogging {
 
-  val wcsView = new WcsView(wcsModel, serviceUrl)
-  val wmsView = new WmsView(wmsModel, serviceUrl)
-  val wmtsView = new WmtsView(wmtsModel, serviceUrl)
+  val wcsView = new WcsView(wcsModel, serviceUrl, interpreter)
+  val wmsView = new WmsView(wmsModel, serviceUrl, interpreter)
+  val wmtsView = new WmtsView(wmtsModel, serviceUrl, interpreter)
 
   // Predicates for choosing a service
   def isWcsReq(key: String, value: String) =

@@ -18,7 +18,7 @@ import cats.data.Validated._
 
 import scala.concurrent.duration._
 
-class GetCoverage(wcsModel: WcsModel) extends LazyLogging {
+class GetCoverage(wcsModel: WcsModel, interpreter: Interpreter) extends LazyLogging {
 
   /*
   QGIS appears to sample WCS service by placing low and high resolution requests at coverage center.
@@ -46,7 +46,7 @@ class GetCoverage(wcsModel: WcsModel) extends LazyLogging {
             LayerExtent.identity(SimpleOgcLayer(name, title, LatLng, source, None))
           case MapAlgebraSource(name, title, sources, algebra, styles) =>
             val simpleLayers = sources.mapValues { rs => SimpleOgcLayer(name, title, LatLng, rs, None) }
-            LayerExtent(IO.pure(algebra), IO.pure(simpleLayers), Interpreter.DEFAULT)
+            LayerExtent(IO.pure(algebra), IO.pure(simpleLayers), interpreter)
         }
 
         // TODO: Return IO instead

@@ -28,7 +28,7 @@ import cats.data.Validated._
 import java.io.File
 import java.net._
 
-class WmtsView(wmtsModel: WmtsModel, serviceUrl: URL) extends LazyLogging {
+class WmtsView(wmtsModel: WmtsModel, serviceUrl: URL, interpreter: Interpreter) extends LazyLogging {
 
   def responseFor(req: Request[IO])(implicit cs: ContextShift[IO]): IO[Response[IO]] = {
       WmtsParams(req.multiParams) match {
@@ -54,14 +54,14 @@ class WmtsView(wmtsModel: WmtsModel, serviceUrl: URL) extends LazyLogging {
               case sl@SimpleTiledOgcLayer(_, _, _, _, _, _) =>
                 LayerTms.identity(sl)
               case sl@MapAlgebraTiledOgcLayer(_, _, _, _, parameters, expr, _) =>
-                LayerTms(IO.pure(expr), IO.pure(parameters), Interpreter.DEFAULT)
+                LayerTms(IO.pure(expr), IO.pure(parameters), interpreter)
             }
 
             val evalHisto = layer match {
               case sl@SimpleTiledOgcLayer(_, _, _, _, _, _) =>
                 LayerHistogram.identity(sl, 512)
               case sl@MapAlgebraTiledOgcLayer(_, _, _, _, parameters, expr, _) =>
-                LayerHistogram(IO.pure(expr), IO.pure(parameters), Interpreter.DEFAULT, 512)
+                LayerHistogram(IO.pure(expr), IO.pure(parameters), interpreter, 512)
             }
 
             (evalWmts(0, tileCol, tileRow), evalHisto).parMapN {

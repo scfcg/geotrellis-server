@@ -1,4 +1,4 @@
-package geotrellis.server.ogc
+package geotrellis.server
 
 import geotrellis.proj4.WebMercator
 import geotrellis.raster._
@@ -11,7 +11,7 @@ import com.azavea.maml._
 import cats._
 import cats.implicits._
 
-object CustomMamlInterpreter {
+package object ogc {
   val zls = ZoomedLayoutScheme(WebMercator, 256)
 
   // The actual implementation of an alternative evaluation strategy lives within this 'Directive'
@@ -41,7 +41,7 @@ object CustomMamlInterpreter {
   }
 
   // We have to wrap up all of the behaviors we hope for the interpreter to implement
-  def apply = NaiveInterpreter(
+  val customSlopeInterpreter = NaiveInterpreter(
     List(
       SourceDirectives.rasterLiteral,
       SourceDirectives.intLiteral,
@@ -99,5 +99,4 @@ object CustomMamlInterpreter {
       FocalDirectives.hillshade
     )
   )
-
 }

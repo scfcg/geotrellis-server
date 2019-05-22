@@ -106,7 +106,8 @@ object Main extends CommandApp(
               conf.wcs.serviceMetadata,
               conf.wcs.layerSources(simpleSources)
             )
-            ogcService = new OgcService(wmsModel, wcsModel, wmtsModel, new URL(publicUrl))
+            interpreter = customSlopeInterpreter
+            ogcService = new OgcService(wmsModel, wcsModel, wmtsModel, new URL(publicUrl), interpreter)
             exitCode   <- BlazeServerBuilder[IO]
               .withIdleTimeout(Duration.Inf) // for test purposes only
               .enableHttp2(true)
